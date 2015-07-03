@@ -7,9 +7,6 @@
   ],
   "description": "Awesome string tokenizer for JavaScript",
   "main": "tokenizer.js",
-  "moduleType": [
-    "node"
-  ],
   "keywords": [
     "string",
     "tokenizer",
