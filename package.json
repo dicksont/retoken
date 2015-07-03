@@ -1,0 +1,27 @@
+{
+  "name": "retoken",
+  "version": "0.0.0",
+  "description": "Awesome string tokenizer for JavaScript",
+  "main": "tokenizer.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dicksont/retoken.git"
+  },
+  "keywords": [
+    "string",
+    "tokenizer",
+    "array"
+  ],
+  "author": "Dickson Tam <dicksont650@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dicksont/retoken/issues"
+  },
+  "homepage": "https://github.com/dicksont/retoken#readme"
+}

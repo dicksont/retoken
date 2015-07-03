@@ -1,0 +1,27 @@
+{
+  "name": "retoken",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dicksont/retoken",
+  "authors": [
+    "Dickson Tam <dicksont650@gmail.com>"
+  ],
+  "description": "Awesome string tokenizer for JavaScript",
+  "main": "tokenizer.js",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "string",
+    "tokenizer",
+    "array",
+    "regex"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
