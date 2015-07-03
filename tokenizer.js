@@ -44,10 +44,10 @@
       if (this.opts.preserveSplit) {
         if (matches[1].length > 0) {
           newToken = matches[1];
-          rest = matches[2] + matches[3];
+          rest = matches[2] + matches[matches.length - 1];
         } else {
           newToken = matches[1] + matches[2];
-          rest = matches[3];
+          rest = matches[matches.length - 1];
         }
         this.retoken.splice(this.retoken.length - 2, 0, '');
       } else {
