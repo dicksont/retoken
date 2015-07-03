@@ -32,9 +32,15 @@
 
   }
 
-  Tokenizer.prototype.splice = function() {
-    throw new Error('Function not yet implemented in tokenizer');
+  function TOKENIZER_OVERRIDE_NOT_IMPLEMENTED(fxname) {
+    Tokenizer.prototype[fxname] = function() {
+      throw new Error('retoken: Function ' + fxname + ' not yet implemented in tokenizer');
+    }
   }
+
+  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('splice');
+  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('sort');
+  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('reverse');
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
@@ -78,12 +84,20 @@
 
   Tokenizer.prototype.unshift = function(str, delimiter) {
     Array.prototype.unshift.call(this, str);
-    this.delimiters.unshift();
+    this.delimiters.unshift(delimiter || '');
     return this;
   }
 
-  Tokenizer.prototype.splice = function() {
-    throw new Error('Function not yet implemented in tokenizer');
+  Tokenizer.prototype.shift = function() {
+    var elem = Array.prototype.shift.call(this);
+    this.delimiters.shift();
+    return elem;
+  }
+
+  Tokenizer.prototype.pop = function() {
+    var elem = Array.prototype.pop.call(this);
+    this.delimiters.pop();
+    return elem;
   }
 
   Tokenizer.prototype.retract = function(times) {
@@ -97,7 +111,7 @@
 
     if (typeof(delimiter) != 'string')
       throw new Error('retoken: Tried to retract a delmiter that is not a string');
-      
+
     this[this.length - 2] += delimiter + this[this.length - 1];
     this.pop();
 
@@ -118,11 +132,6 @@
 
     instance.__proto__ = Tokenizer.prototype;
 
-    /*
-    instance.splice = function() {
-      return undefined;
-    }
-    */
     instance.opts = opts || {};
     instance.delimiters = [];
 
