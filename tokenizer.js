@@ -24,99 +24,112 @@
  *
  */
 
-Tokenizer = {};
 
-Tokenizer.__proto__ = Array.prototype
 
-Tokenizer.extract = function(times) {
-  times = times || 1;
-  
-  if (this.length <= 0)  return this;
+(function() {
 
-  var matches = this[this.length - 1].match(this.regex);
-  var newToken, rest;
+  Tokenizer = {};
 
-  if (matches) {
-    if (this.opts.preserveSplit) {
-      if (matches[1].length > 0) {
-        newToken = matches[1];
-        rest = matches[2] + matches[3];
+  Tokenizer.__proto__ = Array.prototype
+
+  Tokenizer.extract = function(times) {
+    times = times || 1;
+
+    if (this.length <= 0)  return this;
+
+    var matches = this[this.length - 1].match(this.regex);
+    var newToken, rest;
+
+    if (matches) {
+      if (this.opts.preserveSplit) {
+        if (matches[1].length > 0) {
+          newToken = matches[1];
+          rest = matches[2] + matches[3];
+        } else {
+          newToken = matches[1] + matches[2];
+          rest = matches[3];
+        }
+        this.retoken.splice(this.retoken.length - 2, 0, '');
       } else {
-        newToken = matches[1] + matches[2];
+        newToken = matches[1];
+        this.retoken.splice(this.retoken.length - 2, 0, matches[2]);
         rest = matches[3];
       }
-      this.retoken.splice(this.retoken.length - 2, 0, '');
-    } else {
-      newToken = matches[1];
-      this.retoken.splice(this.retoken.length - 2, 0, matches[2]);
-      rest = matches[3];
+
+      this[this.length - 1] = newToken;
+      this[this.length] = rest;
     }
 
-    this[this.length - 1] = newToken;
-    this[this.length] = rest;
+
+    return (times > 1)? this.extract(times - 1) : this;
   }
 
-
-  return (times > 1)? this.extract(times - 1) : this;
-}
-
-Tokenizer.push = function(str, retoken) {
-  Array.prototype.push.call(this, str);
-  this.retoken.push(retoken || '');
-  return this;
-}
-
-Tokenizer.unshift = function(str, retoken) {
-  Array.prototype.unshift.call(this, str);
-  this.retoken.unshift();
-  return this;
-}
-
-Tokenizer.splice = function() {
-  return undefined;
-}
-
-Tokenizer.retract = function(times) {
-  times = times || 1;
-  if (this.length < 2) return;
-
-  var retoken = this.retoken.splice(this.retoken.length - 2, 1)[0] || '';
-
-  this[this.length - 2] += retoken + this[this.length - 1];
-  this.pop();
-
-  return (times > 1)? this.retract(times - 1) : this;
-}
-
-Tokenizer.replaceToken = function(token, replacement) {
-   var index = this.indexOf(token);
-   if (!~index) return this;
-
-   this[index] = replacement;
-
-   return this;
-}
-
-
-function tokenizer(regex, opts) {
-  var instance = [ ];
-
-  instance.__proto__ = Tokenizer;
-  instance.opts = opts || {};
-  instance.retoken = [];
-
-  var reCore;
-
-  if (regex instanceof RegExp) {
-    reCore = regex.source.replace('/^\^/', '').replace('/\$$/', '');
-  } else {
-    reCore = regex;
-    reCore.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  Tokenizer.push = function(str, retoken) {
+    Array.prototype.push.call(this, str);
+    this.retoken.push(retoken || '');
+    return this;
   }
 
-  instance.regex = new RegExp('^(.*?)(' + reCore + ')(.*)$');
+  Tokenizer.unshift = function(str, retoken) {
+    Array.prototype.unshift.call(this, str);
+    this.retoken.unshift();
+    return this;
+  }
 
-  return instance;
-}
+  Tokenizer.splice = function() {
+    return undefined;
+  }
 
-module.exports = tokenizer;
+  Tokenizer.retract = function(times) {
+    times = times || 1;
+    if (this.length < 2) return;
+
+    var retoken = this.retoken.splice(this.retoken.length - 2, 1)[0] || '';
+
+    this[this.length - 2] += retoken + this[this.length - 1];
+    this.pop();
+
+    return (times > 1)? this.retract(times - 1) : this;
+  }
+
+  Tokenizer.replaceToken = function(token, replacement) {
+     var index = this.indexOf(token);
+     if (!~index) return this;
+
+     this[index] = replacement;
+
+     return this;
+  }
+
+  function tokenizer(regex, opts) {
+    var instance = [ ];
+
+    instance.__proto__ = Tokenizer;
+    instance.opts = opts || {};
+    instance.retoken = [];
+
+    var reCore;
+
+    if (regex instanceof RegExp) {
+      reCore = regex.source.replace('/^\^/', '').replace('/\$$/', '');
+    } else {
+      reCore = regex;
+      reCore.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    }
+
+    instance.regex = new RegExp('^(.*?)(' + reCore + ')(.*)$');
+
+    return instance;
+  }
+
+  if (typeof module !== 'undefined' && module && module.exports) { // Node.js & CommonJS
+    module.exports = tokenizer;
+  } else if (typeof define === 'function' && define.amd) {
+    define('retoken', [], function() {
+      return tokenizer;
+    });
+  } else { // Browser
+    window.retoken = tokenizer;
+  }
+
+})();

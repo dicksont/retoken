@@ -24,66 +24,72 @@
  *
  */
 
-var tokenizer = require('../tokenizer.js');
-var assert = require('assert');
+(function(factory) {
 
-var regexes = [ /\s+/ ];
+  if (typeof module !== 'undefined' && module && module.exports) {
+    factory(require('assert'), require('../tokenizer.js'));
+  } else {
+    factory(window.assert, window.retoken);
+    mocha.checkLeaks();
+    mocha.run();
+  }
 
-var strings = [
-  'The quick brown fox jumped over the lazy dog'
-];
+})(function(assert, tokenizer) {
 
-function test(regex) {
+  var regexes = [ /\s+/ ];
+  var strings = [
+    'The quick brown fox jumped over the lazy dog'
+  ];
 
-  describe('tokenizer(' + regex + ')', function() {
+  function test(regex) {
 
-    var tk = tokenizer(regex);
+    describe('tokenizer(' + regex + ')', function() {
 
-    it ('should create a tokenizer with length 0', function() {
-      assert.equal(tk.length, 0);
+      var tk = tokenizer(regex);
+
+      it ('should create a tokenizer with length 0', function() {
+        assert.equal(tk.length, 0);
+      })
+
+
+      strings.map(function(str) {
+        describe('.push(' + str + ')', function() {
+
+          it ('should add the string to the tokenizer', function() {
+            var tk = tokenizer(regex).push(str);
+
+            assert.equal(tk.length, 1);
+            assert.equal(tk[0], str);
+          })
+
+        })
+
+        describe('.extract', function() {
+
+          it('should create a token', function() {
+            var tk = tokenizer(regex).push(str).extract();
+
+            assert.equal(tk.length, 2);
+            var match = str.match(regex);
+            assert.equal(tk[0] + match[0] + tk[1], str);
+          })
+        })
+
+        describe('.retract', function() {
+
+          it('should retract the token', function() {
+            var tk = tokenizer(regex).push(str).extract().retract();
+
+            assert.equal(tk.length, 1);
+            assert.equal(tk[0], str);
+          })
+        })
+
+      })
     })
+  }
 
-
-    strings.map(function(str) {
-      describe('.push(' + str + ')', function() {
-
-        it ('should add the string to the tokenizer', function() {
-          var tk = tokenizer(regex).push(str);
-
-          assert.equal(tk.length, 1);
-          assert.equal(tk[0], str);
-        })
-
-      })
-
-      describe('.extract', function() {
-
-        it('should create a token', function() {
-          var tk = tokenizer(regex).push(str).extract();
-
-          assert.equal(tk.length, 2);
-          var match = str.match(regex);
-          assert.equal(tk[0] + match[0] + tk[1], str);
-        })
-      })
-
-      describe('.retract', function() {
-
-        it('should retract the token', function() {
-          var tk = tokenizer(regex).push(str).extract().retract();
-
-          assert.equal(tk.length, 1);
-          assert.equal(tk[0], str);
-        })
-      })
-
-    })
-
-
-
-  })
-}
-
-for(var i=0; i < regexes.length; i++) {
-  test(regexes[i]);
-}
+  for(var i=0; i < regexes.length; i++) {
+    test(regexes[i]);
+  }
+});
