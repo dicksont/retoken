@@ -3,20 +3,109 @@
 
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Test Runner for Array-Etc</title>
   <link rel="stylesheet" href="/node_modules/mocha/mocha.css"/>
+  <style>
+
+  body {
+    font-family: 'Arial', sans-serif;
+  }
+
+  label {
+    font-size: 12px;
+    color: #666;
+    margin-right: 6px;
+  }
+
+  #div_modenv {
+    margin: 9px;
+  }
+
+  </style>
 </head>
 
 <body>
+  <div id="div_modenv">
+    <label>Module Environment</label>
+    <select id="select_modenv">
+      <option value="htmlscript">HTML Script Tag / Browser</option>
+      <option value="amd">AMD / Browser</option>
+    </select>
+  </div>
   <div id="mocha"></div>
+
+
   <script src="/node_modules/chai/chai.js"></script>
   <script src="/node_modules/mocha/mocha.js"></script>
   <script>
     window.assert = chai.assert;
     mocha.setup('bdd');
   </script>
-  <script src="../tokenizer.js"></script>
-  <script src="/test/test_tokenizer.js"></script>
+  <script>
+
+    location.getParameterByName = function(name) {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+          results = regex.exec(this.search);
+      return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    function loadBrowserScripts(scripts) {
+      if (!scripts) {
+        return;
+      } else if (!Array.isArray(scripts)) {
+        loadBrowserScripts(new Array(scripts));
+      } else if (scripts.length == 0) {
+        return;
+      } else {
+        var script = scripts.shift();
+        var scriptel = document.createElement('script');
+
+        scriptel.setAttribute('src', script);
+        scriptel.type = "text/javascript";
+        scriptel.async = false;
+
+        document.body.appendChild(scriptel);
+
+        loadBrowserScripts(scripts);
+      }
+    }
+
+    function waitUntil(func, cb) {
+      func()? cb() : setTimeout(function() { waitUntil(func, cb) }, waitUntil.step);
+    }
+
+    waitUntil.step = 100;
+
+    var modenv = location.getParameterByName('modenv') || 'htmlscript';
+
+    document.querySelector('#select_modenv').value = modenv;
+    document.querySelector('#select_modenv').addEventListener('change', function() {
+      window.location.href = '?modenv=' + this.value;
+    })
+
+    if (modenv == 'amd') {
+        loadBrowserScripts('/bower_components/requirejs/require.js');
+        waituntil(function() { return window.hasOwnProperty('requirejs') }, function() {
+          requirejs.config({
+            urlArgs: Date.now(),
+            paths: {
+              'retoken' : '/tokenizer',
+              'retoken-spec' :'/test/tokenizer'
+            }
+          });
+        });
+    } else {
+      loadBrowserScripts([
+        '../tokenizer.js',
+        '/test/test_tokenizer.js'
+      ])
+    }
+
+  </script>
 </body>
 
 </html>

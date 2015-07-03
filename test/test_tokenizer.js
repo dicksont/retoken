@@ -28,6 +28,12 @@
 
   if (typeof module !== 'undefined' && module && module.exports) {
     factory(require('assert'), require('../tokenizer.js'));
+  } else if (typeof define === 'function' && define.amd) { // Require.js & AMD
+
+    define([ 'chai', 'retoken'], function(chai, retoken) {
+      factory(chai.assert, retoken);
+    });
+
   } else {
     factory(window.assert, window.retoken);
     mocha.checkLeaks();
