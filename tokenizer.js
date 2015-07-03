@@ -28,11 +28,13 @@
 
 (function() {
 
-  Tokenizer = {};
+  function Tokenizer() {
 
-  Tokenizer.__proto__ = Array.prototype
+  }
 
-  Tokenizer.extract = function(times) {
+  Tokenizer.prototype.__proto__ = Array.prototype
+
+  Tokenizer.prototype.extract = function(times) {
     times = times || 1;
 
     if (this.length <= 0)  return this;
@@ -64,23 +66,23 @@
     return (times > 1)? this.extract(times - 1) : this;
   }
 
-  Tokenizer.push = function(str, retoken) {
+  Tokenizer.prototype.push = function(str, retoken) {
     Array.prototype.push.call(this, str);
     this.retoken.push(retoken || '');
     return this;
   }
 
-  Tokenizer.unshift = function(str, retoken) {
+  Tokenizer.prototype.unshift = function(str, retoken) {
     Array.prototype.unshift.call(this, str);
     this.retoken.unshift();
     return this;
   }
 
-  Tokenizer.splice = function() {
-    return undefined;
+  Tokenizer.prototype.splice = function() {
+    throw new Error('Function not yet implemented in tokenizer');
   }
 
-  Tokenizer.retract = function(times) {
+  Tokenizer.prototype.retract = function(times) {
     times = times || 1;
     if (this.length < 2) return;
 
@@ -92,7 +94,7 @@
     return (times > 1)? this.retract(times - 1) : this;
   }
 
-  Tokenizer.replaceToken = function(token, replacement) {
+  Tokenizer.prototype.replaceToken = function(token, replacement) {
      var index = this.indexOf(token);
      if (!~index) return this;
 
@@ -104,7 +106,13 @@
   function tokenizer(regex, opts) {
     var instance = [ ];
 
-    instance.__proto__ = Tokenizer;
+    instance.__proto__ = Tokenizer.prototype;
+
+    /*
+    instance.splice = function() {
+      return undefined;
+    }
+    */
     instance.opts = opts || {};
     instance.retoken = [];
 
