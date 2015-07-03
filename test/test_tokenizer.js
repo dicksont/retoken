@@ -42,60 +42,63 @@
 
 })(function(assert, tokenizer) {
 
-  var regexes = [ /\s+/ ];
+  var delimiters = [
+    /\s+/,
+    '.'
+  ];
   var strings = [
-    'The quick brown fox jumped over the lazy dog'
+    'The quick brown fox jumped over the lazy dog',
+    '172.168.120.2'
   ];
 
-  function test(regex) {
+  function test(delimiter, str) {
 
-    describe('tokenizer(' + regex + ')', function() {
+    describe('tokenizer(' + delimiter + ')', function() {
 
-      var tk = tokenizer(regex);
+      var tk = tokenizer(delimiter);
 
       it ('should create a tokenizer with length 0', function() {
         assert.equal(tk.length, 0);
       })
 
+      describe('.push(' + str + ')', function() {
 
-      strings.map(function(str) {
-        describe('.push(' + str + ')', function() {
+        it ('should add the string to the tokenizer', function() {
+          var tk = tokenizer(delimiter).push(str);
 
-          it ('should add the string to the tokenizer', function() {
-            var tk = tokenizer(regex).push(str);
-
-            assert.equal(tk.length, 1);
-            assert.equal(tk[0], str);
-          })
-
+          assert.equal(tk.length, 1);
+          assert.equal(tk[0], str);
         })
 
-        describe('.extract', function() {
+      })
 
-          it('should create a token', function() {
-            var tk = tokenizer(regex).push(str).extract();
+      describe('.extract', function() {
 
-            assert.equal(tk.length, 2);
-            var match = str.match(regex);
-            assert.equal(tk[0] + match[0] + tk[1], str);
-          })
+        it('should create a token', function() {
+          var tk = tokenizer(delimiter).push(str).extract();
+
+          assert.equal(tk.length, 2);
+
+          var separator = (delimiter instanceof RegExp)? str.match(delimiter)[0] : delimiter;
+          assert.equal(tk[0] + separator + tk[1], str);
+          assert.ok(tk[0].length > 0);
         })
+      })
 
-        describe('.retract', function() {
+      describe('.retract', function() {
 
-          it('should retract the token', function() {
-            var tk = tokenizer(regex).push(str).extract().retract();
+        it('should retract the token', function() {
+          var tk = tokenizer(delimiter).push(str).extract().retract();
 
-            assert.equal(tk.length, 1);
-            assert.equal(tk[0], str);
-          })
+          assert.equal(tk.length, 1);
+          assert.equal(tk[0], str);
         })
 
       })
     })
   }
 
-  for(var i=0; i < regexes.length; i++) {
-    test(regexes[i]);
+  for(var i=0; i < delimiters.length; i++) {
+    test(delimiters[i], strings[i]);
   }
 });

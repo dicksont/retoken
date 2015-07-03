@@ -32,18 +32,22 @@
 
   }
 
+  Tokenizer.prototype.splice = function() {
+    throw new Error('Function not yet implemented in tokenizer');
+  }
+
   Tokenizer.prototype.__proto__ = Array.prototype
 
   Tokenizer.prototype.extract = function(times) {
     times = times || 1;
 
-    if (this.length <= 0)  return this;
+    if (this.length < 1)  return this;
 
     var matches = this[this.length - 1].match(this.regex);
     var newToken, rest;
 
     if (matches) {
-      if (this.opts.preserveSplit) {
+      if (this.opts.preserveDelimiter) {
         if (matches[1].length > 0) {
           newToken = matches[1];
           rest = matches[2] + matches[matches.length - 1];
@@ -51,10 +55,10 @@
           newToken = matches[1] + matches[2];
           rest = matches[matches.length - 1];
         }
-        this.retoken.splice(this.retoken.length - 2, 0, '');
+        this.delimiters.splice(this.delimiters.length - 2, 0, '');
       } else {
         newToken = matches[1];
-        this.retoken.splice(this.retoken.length - 2, 0, matches[2]);
+        this.delimiters.splice(this.delimiters.length - 2, 0, matches[2]);
         rest = matches[3];
       }
 
@@ -66,15 +70,15 @@
     return (times > 1)? this.extract(times - 1) : this;
   }
 
-  Tokenizer.prototype.push = function(str, retoken) {
+  Tokenizer.prototype.push = function(str, delimiter) {
     Array.prototype.push.call(this, str);
-    this.retoken.push(retoken || '');
+    this.delimiters.push(delimiter || '');
     return this;
   }
 
-  Tokenizer.prototype.unshift = function(str, retoken) {
+  Tokenizer.prototype.unshift = function(str, delimiter) {
     Array.prototype.unshift.call(this, str);
-    this.retoken.unshift();
+    this.delimiters.unshift();
     return this;
   }
 
@@ -86,9 +90,9 @@
     times = times || 1;
     if (this.length < 2) return;
 
-    var retoken = this.retoken.splice(this.retoken.length - 2, 1)[0] || '';
+    var delimiter = this.delimiters.splice(this.delimiters.length - 2, 1)[0] || '';
 
-    this[this.length - 2] += retoken + this[this.length - 1];
+    this[this.length - 2] += delimiter + this[this.length - 1];
     this.pop();
 
     return (times > 1)? this.retract(times - 1) : this;
@@ -103,7 +107,7 @@
      return this;
   }
 
-  function tokenizer(regex, opts) {
+  function tokenizer(delimiter, opts) {
     var instance = [ ];
 
     instance.__proto__ = Tokenizer.prototype;
@@ -114,15 +118,14 @@
     }
     */
     instance.opts = opts || {};
-    instance.retoken = [];
+    instance.delimiters = [];
 
     var reCore;
 
-    if (regex instanceof RegExp) {
-      reCore = regex.source.replace('/^\^/', '').replace('/\$$/', '');
+    if (delimiter instanceof RegExp) {
+      reCore = delimiter.source.replace('/^\^/', '').replace('/\$$/', '');
     } else {
-      reCore = regex;
-      reCore.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      reCore = delimiter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }
 
     instance.regex = new RegExp('^(.*?)(' + reCore + ')(.*)$');
