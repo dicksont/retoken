@@ -92,6 +92,12 @@
 
     var delimiter = this.delimiters.splice(this.delimiters.length - 2, 1)[0] || '';
 
+    if (typeof(this[this.length - 2]) != 'string' || typeof(this[this.length - 1]) != 'string')
+      throw new Error('retoken: Tried to retract a token that is not a string');
+
+    if (typeof(delimiter) != 'string')
+      throw new Error('retoken: Tried to retract a delmiter that is not a string');
+      
     this[this.length - 2] += delimiter + this[this.length - 1];
     this.pop();
 
