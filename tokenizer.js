@@ -143,7 +143,10 @@
       reCore = delimiter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }
 
-    instance.regex = new RegExp('^(.*?)(' + reCore + ')(.*)$');
+    Object.defineProperty(instance, 'regex', {
+      value: new RegExp('^(.*?)(' + reCore + ')(.*)$'),
+      enumerable: true
+    });
 
     return instance;
   }
