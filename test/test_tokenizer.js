@@ -93,8 +93,41 @@
           assert.equal(tk.length, 1);
           assert.equal(tk[0], str);
         })
-
       })
+
+      describe('.counter', function() {
+        it('should equal zero at construction', function() {
+          var tk = tokenizer(delimiter);
+
+          assert.equal(tk.counter, 0);
+        });
+
+        it('should not change with push', function() {
+          var tk = tokenizer(delimiter);
+          assert.equal(tk.counter, 0);
+          tk.push(str);
+          assert.equal(tk.counter, 0);
+        });
+
+        it('should not change with shift', function() {
+          var tk = tokenizer(delimiter);
+          assert.equal(tk.counter, 0);
+          tk.shift(str);
+          assert.equal(tk.counter, 0);
+        });
+
+        it('should increment by one with token extraction', function() {
+          var tk = tokenizer(delimiter).push(str).extract();
+          assert.equal(tk.counter, 1);
+        });
+
+        it('should decrease by one with token retraction', function() {
+          var tk = tokenizer(delimiter).push(str).extract();
+          assert.equal(tk.counter, 1);
+          tk.retract();
+          assert.equal(tk.counter, 0);
+        });
+      });
     })
   }
 

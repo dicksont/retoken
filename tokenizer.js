@@ -70,6 +70,7 @@
 
       this[this.length - 1] = newToken;
       this[this.length] = rest;
+      this.counter++;
     }
 
 
@@ -114,6 +115,7 @@
 
     this[this.length - 2] += delimiter + this[this.length - 1];
     this.pop();
+    this.counter--;
 
     return (times > 1)? this.retract(times - 1) : this;
   }
@@ -134,6 +136,7 @@
 
     instance.opts = opts || {};
     instance.delimiters = [];
+    instance.counter = 0;
 
     var reCore;
 
