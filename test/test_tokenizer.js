@@ -74,7 +74,7 @@
 
       describe('.extract', function() {
 
-        it('should create a token', function() {
+        it('should extract a token', function() {
           var tk = tokenizer(delimiter).push(str).extract();
 
           assert.equal(tk.length, 2);
