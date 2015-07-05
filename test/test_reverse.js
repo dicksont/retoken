@@ -42,7 +42,7 @@
 
  })(function(assert, tokenizer) {
 
-   describe('tokenizer', function() {
+   describe('--', function() {
      describe('.reverse', function() {
        it('should reverse the tokenizer state', function() {
          var str = 'a b  c    d';

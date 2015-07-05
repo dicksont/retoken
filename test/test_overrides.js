@@ -43,7 +43,7 @@
 
 })(function(assert, tokenizer) {
 
-  describe('tokenizer', function() {
+  describe('--', function() {
     describe('.splice', function() {
       it('should throw an error when called', function() {
         assert.throws(function() {
