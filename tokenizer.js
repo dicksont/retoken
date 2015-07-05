@@ -49,10 +49,10 @@
           newToken = matches[1] + matches[2];
           rest = matches[matches.length - 1];
         }
-        this.delimiters.splice(this.delimiters.length - 2, 0, '');
+        this.delimiters.splice(this.delimiters.length - 1, 0, '');
       } else {
         newToken = matches[1];
-        this.delimiters.splice(this.delimiters.length - 2, 0, matches[2]);
+        this.delimiters.splice(this.delimiters.length - 1, 0, matches[2]);
         rest = matches[3];
       }
 
@@ -70,7 +70,7 @@
     times = times || 1;
     if (this.length < 2) return;
 
-    var delimiter = this.delimiters.splice(this.delimiters.length - 2, 1)[0] || '';
+    var delimiter = this.delimiters[this.delimiters.length - 1] || '';
 
     if (typeof(this[this.length - 2]) != 'string' || typeof(this[this.length - 1]) != 'string')
       throw new Error('retoken: Tried to retract a token that is not a string');
@@ -101,9 +101,14 @@
     }
   }
 
+  Tokenizer.prototype.reverse = function() {
+    Array.prototype.reverse.call(this);
+    this.delimiters.reverse();
+    return this;
+  }
+
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('splice');
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('sort');
-  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('reverse');
 
   Tokenizer.prototype.push = function(str, delimiter) {
     Array.prototype.push.call(this, str);
