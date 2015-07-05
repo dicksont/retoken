@@ -70,7 +70,7 @@
 
       this[this.length - 1] = newToken;
       this[this.length] = rest;
-      this.counter++;
+      this.extractionLevel++;
     }
 
 
@@ -111,11 +111,11 @@
       throw new Error('retoken: Tried to retract a token that is not a string');
 
     if (typeof(delimiter) != 'string')
-      throw new Error('retoken: Tried to retract a delmiter that is not a string');
+      throw new Error('retoken: Tried to retract a delimiter that is not a string');
 
     this[this.length - 2] += delimiter + this[this.length - 1];
     this.pop();
-    this.counter--;
+    this.extractionLevel--;
 
     return (times > 1)? this.retract(times - 1) : this;
   }
@@ -136,7 +136,7 @@
 
     instance.opts = opts || {};
     instance.delimiters = [];
-    instance.counter = 0;
+    instance.extractionLevel = 0;
 
     var reCore;
 
