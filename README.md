@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/dicksont/retoken.svg?branch=master)](https://travis-ci.org/dicksont/retoken)
 [![npm version](https://badge.fury.io/js/retoken.svg)](http://badge.fury.io/js/retoken)
+[![Bower version](https://badge.fury.io/bo/retoken.svg)](http://badge.fury.io/bo/retoken)
 
 Retoken is an awesome string tokenizer for JavaScript.
 
