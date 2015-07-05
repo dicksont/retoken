@@ -107,8 +107,26 @@
     return this;
   }
 
+
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('splice');
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('sort');
+
+  Tokenizer.prototype.insertToken = function(index, token, delimiter) {
+    if (typeof(token) != 'string')
+      throw new Error('retoken: Second argument [token] is not a string: ' + token);
+
+    if (delimiter != null && typeof(delimiter) != 'string')
+      throw new Error('retoken: Third argument [delimiter] is not a string: ' + delimiter);
+
+    Array.prototype.splice.call(this, index, 0, token);
+
+    if (this.length > 1) {
+      delimiter = delimiter || ''
+      this.delimiters.splice(index, 0, delimiter);
+    }
+
+    return this;
+  }
 
   Tokenizer.prototype.push = function(str, delimiter) {
     Array.prototype.push.call(this, str);
