@@ -164,6 +164,18 @@
     return arr;
   }
 
+  Object.defineProperty(Tokenizer.prototype, 'head', {
+    get: function() { return this[0]; },
+    set: function(token) { this[0] = token; },
+    enumerable: true
+  })
+
+  Object.defineProperty(Tokenizer.prototype, 'tail', {
+    get: function() { return this[this.length - 1]; },
+    set: function(token) { this[this.length - 1] = token; },
+    enumerable: true
+  })
+
   function tokenizer(delimiter, opts) {
     var instance = [ ];
 
