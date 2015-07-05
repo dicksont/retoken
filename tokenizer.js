@@ -49,10 +49,10 @@
           newToken = matches[1] + matches[2];
           rest = matches[matches.length - 1];
         }
-        this.delimiters.splice(this.delimiters.length - 1, 0, '');
+        this.delimiters.push('');
       } else {
         newToken = matches[1];
-        this.delimiters.splice(this.delimiters.length - 1, 0, matches[2]);
+        this.delimiters.push(matches[2]);
         rest = matches[3];
       }
 
@@ -112,7 +112,9 @@
 
   Tokenizer.prototype.push = function(str, delimiter) {
     Array.prototype.push.call(this, str);
-    this.delimiters.push(delimiter || '');
+
+    if (this.length > 1) this.delimiters.push(delimiter || '');
+
     return this;
   }
 
