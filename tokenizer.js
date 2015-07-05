@@ -41,7 +41,7 @@
     var newToken, rest;
 
     if (matches) {
-      if (this.opts.preserveDelimiter) {
+      if (this.opts.incorporateDelimiter) {
         if (matches[1].length > 0) {
           newToken = matches[1];
           rest = matches[2] + matches[matches.length - 1];
