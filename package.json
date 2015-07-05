@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha test/test_tokenizer.js test/test_overrides.js test/test_reverse.js test/test_insert.js"
+    "test": "mocha test/test_tokenizer.js test/test_overrides.js test/test_reverse.js test/test_insert.js test/test_lastdelimiter.js"
   },
   "devDependencies": {
     "mocha" : "^2.2.5",

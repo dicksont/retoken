@@ -55,7 +55,7 @@
         this.delimiters.push(matches[2]);
         rest = matches[3];
       }
-
+      this.lastDelimiterExtracted = matches[2];
       this[this.length - 1] = newToken;
       this[this.length] = rest;
       this.extractionLevel++;
