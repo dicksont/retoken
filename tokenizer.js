@@ -28,19 +28,7 @@
 
 (function() {
 
-  function Tokenizer() {
-
-  }
-
-  function TOKENIZER_OVERRIDE_NOT_IMPLEMENTED(fxname) {
-    Tokenizer.prototype[fxname] = function() {
-      throw new Error('retoken: Function ' + fxname + ' not yet implemented in tokenizer');
-    }
-  }
-
-  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('splice');
-  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('sort');
-  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('reverse');
+  function Tokenizer() {}
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
@@ -77,6 +65,46 @@
     return (times > 1)? this.extract(times - 1) : this;
   }
 
+
+  Tokenizer.prototype.retract = function(times) {
+    times = times || 1;
+    if (this.length < 2) return;
+
+    var delimiter = this.delimiters.splice(this.delimiters.length - 2, 1)[0] || '';
+
+    if (typeof(this[this.length - 2]) != 'string' || typeof(this[this.length - 1]) != 'string')
+      throw new Error('retoken: Tried to retract a token that is not a string');
+
+    if (typeof(delimiter) != 'string')
+      throw new Error('retoken: Tried to retract a delimiter that is not a string');
+
+    this[this.length - 2] += delimiter + this[this.length - 1];
+    this.pop();
+    this.extractionLevel--;
+
+    return (times > 1)? this.retract(times - 1) : this;
+  }
+
+
+  Tokenizer.prototype.replaceToken = function(token, replacement) {
+     var index = this.indexOf(token);
+     if (!~index) return this;
+
+     this[index] = replacement;
+
+     return this;
+  }
+
+  function TOKENIZER_OVERRIDE_NOT_IMPLEMENTED(fxname) {
+    Tokenizer.prototype[fxname] = function() {
+      throw new Error('retoken: Function ' + fxname + ' not yet implemented in tokenizer');
+    }
+  }
+
+  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('splice');
+  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('sort');
+  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('reverse');
+
   Tokenizer.prototype.push = function(str, delimiter) {
     Array.prototype.push.call(this, str);
     this.delimiters.push(delimiter || '');
@@ -99,34 +127,6 @@
     var elem = Array.prototype.pop.call(this);
     this.delimiters.pop();
     return elem;
-  }
-
-  Tokenizer.prototype.retract = function(times) {
-    times = times || 1;
-    if (this.length < 2) return;
-
-    var delimiter = this.delimiters.splice(this.delimiters.length - 2, 1)[0] || '';
-
-    if (typeof(this[this.length - 2]) != 'string' || typeof(this[this.length - 1]) != 'string')
-      throw new Error('retoken: Tried to retract a token that is not a string');
-
-    if (typeof(delimiter) != 'string')
-      throw new Error('retoken: Tried to retract a delimiter that is not a string');
-
-    this[this.length - 2] += delimiter + this[this.length - 1];
-    this.pop();
-    this.extractionLevel--;
-
-    return (times > 1)? this.retract(times - 1) : this;
-  }
-
-  Tokenizer.prototype.replaceToken = function(token, replacement) {
-     var index = this.indexOf(token);
-     if (!~index) return this;
-
-     this[index] = replacement;
-
-     return this;
   }
 
   function tokenizer(delimiter, opts) {
