@@ -154,6 +154,16 @@
     return elem;
   }
 
+  Tokenizer.prototype.toArray = function() {
+    var arr = new Array(this.length);
+
+    for(var i=0; i < this.length; i++) {
+      arr[i] = this[i];
+    }
+
+    return arr;
+  }
+
   function tokenizer(delimiter, opts) {
     var instance = [ ];
 
