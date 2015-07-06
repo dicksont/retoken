@@ -89,19 +89,50 @@
 
     if (modenv == 'amd') {
         loadBrowserScripts('/bower_components/requirejs/require.js');
-        waituntil(function() { return window.hasOwnProperty('requirejs') }, function() {
+        waitUntil(function() { return window.hasOwnProperty('requirejs') }, function() {
           requirejs.config({
             urlArgs: Date.now(),
             paths: {
+              'chai': '/bower_components/chai/chai',
               'retoken' : '/tokenizer',
-              'retoken-spec' :'/test/tokenizer'
+              'test-headtail' : '/test/test_headtail',
+              'test-insert' : '/test/test_insert',
+              'test-lastdelimiter' : '/test/test_lastdelimiter',
+              'test-overrides' : '/test/test_overrides',
+              'test-reverse' : '/test/test_reverse',
+              'test-toarray' : '/test/test_toarray',
+              'test-tokenizer' : '/test/test_tokenizer'
             }
+          });
+          requirejs(['test-tokenizer', 'test-overrides', 'test-reverse',  'test-insert', 'test-lastdelimiter', 'test-toarray', 'test-headtail'], function() {
+            mocha.checkLeaks();
+            mocha.run();
           });
         });
     } else {
+      var checkLeaksCount = 0;
+      var runCount = 0;
+
+      var _checkLeaks = mocha.checkLeaks;
+      var _run = mocha.run;
+
+      mocha.checkLeaks = function() {
+        if (++checkLeaksCount == 7) _checkLeaks.call(mocha);
+      }
+
+      mocha.run = function() {
+        if (++runCount == 7) _run.call(mocha);
+      }
+
       loadBrowserScripts([
         '../tokenizer.js',
-        '/test/test_tokenizer.js'
+        '/test/test_tokenizer.js',
+        '/test/test_overrides.js',
+        '/test/test_reverse.js',
+        '/test/test_insert.js',
+        '/test/test_lastdelimiter.js',
+        '/test/test_toarray.js',
+        '/test/test_headtail.js',
       ])
     }
 
