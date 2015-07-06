@@ -28,7 +28,30 @@
 
 (function() {
 
-  function Tokenizer() {}
+  function Tokenizer(delimiter, opts) {
+    var instance = [ ];
+
+    instance.__proto__ = Tokenizer.prototype;
+
+    instance.opts = opts || {};
+    instance.delimiters = [];
+    instance.extractionLevel = 0;
+
+    var reCore;
+
+    if (delimiter instanceof RegExp) {
+      reCore = delimiter.source.replace('/^\^/', '').replace('/\$$/', '');
+    } else {
+      reCore = delimiter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    }
+
+    Object.defineProperty(instance, 'regex', {
+      value: new RegExp('^(.*?)(' + reCore + ')(.*)$'),
+      enumerable: true
+    });
+
+    return instance;
+  }
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
@@ -176,39 +199,15 @@
     enumerable: true
   })
 
-  function tokenizer(delimiter, opts) {
-    var instance = [ ];
-
-    instance.__proto__ = Tokenizer.prototype;
-
-    instance.opts = opts || {};
-    instance.delimiters = [];
-    instance.extractionLevel = 0;
-
-    var reCore;
-
-    if (delimiter instanceof RegExp) {
-      reCore = delimiter.source.replace('/^\^/', '').replace('/\$$/', '');
-    } else {
-      reCore = delimiter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-    }
-
-    Object.defineProperty(instance, 'regex', {
-      value: new RegExp('^(.*?)(' + reCore + ')(.*)$'),
-      enumerable: true
-    });
-
-    return instance;
-  }
 
   if (typeof module !== 'undefined' && module && module.exports) { // Node.js & CommonJS
-    module.exports = tokenizer;
+    module.exports = Tokenizer;
   } else if (typeof define === 'function' && define.amd) {
     define('retoken', [], function() {
-      return tokenizer;
+      return Tokenizer;
     });
   } else { // Browser
-    window.retoken = tokenizer;
+    window.retoken = Tokenizer;
   }
 
 })();
