@@ -7,6 +7,10 @@
   ],
   "description": "Awesome string tokenizer for JavaScript",
   "main": "tokenizer.js",
+  "devDependencies": {
+    "chai": "~3.0.0",
+    "requirejs": "~2.1.18"
+  },
   "keywords": [
     "string",
     "tokenizer",
