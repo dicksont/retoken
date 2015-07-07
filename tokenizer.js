@@ -28,7 +28,7 @@
 
 (function() {
 
-  function Tokenizer(delimiter, opts) {
+  function Tokenizer(reDelimiter, opts) {
     var instance = [ ];
 
     instance.__proto__ = Tokenizer.prototype;
@@ -36,29 +36,50 @@
     instance.opts = opts || {};
     instance.delimiters = [];
     instance.extractionLevel = 0;
+    instance.minExtractionLevel = 0;
 
-    var reCore;
-
-    if (delimiter instanceof RegExp) {
-      reCore = delimiter.source.replace('/^\^/', '').replace('/\$$/', '');
-    } else {
-      reCore = delimiter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-    }
-
-    Object.defineProperty(instance, 'regex', {
-      value: new RegExp('^(.*?)(' + reCore + ')(.*)$'),
-      enumerable: true
-    });
+    instance.replaceDelimiterExpression(reDelimiter);
 
     return instance;
   }
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
+  Tokenizer.prototype.replaceDelimiterExpression = function(reDelimiter) {
+    var reCore;
+
+    if (reDelimiter instanceof RegExp) {
+      reCore = reDelimiter.source.replace('/^\^/', '').replace('/\$$/', '');
+    } else {
+      reCore = reDelimiter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    }
+
+    Object.defineProperty(this, 'regex', {
+      value: new RegExp('^(.*?)(' + reCore + ')(.*)$'),
+      enumerable: true,
+      configurable: true
+    });
+  }
+
+  Tokenizer.prototype.subtokenize = function(reDelimiter, opts) {
+
+    for (var optName in opts) {
+      this.opts[optName] = opts[optName];
+    }
+
+    this.replaceDelimiterExpression(reDelimiter);
+    this.minExtractionLevel = this.extractionLevel;
+  }
+
+  Tokenizer.prototype.canRetract = function() {
+    return this.extractionLevel - 1 > this.minExtractionLevel;
+  }
+
   Tokenizer.prototype.extract = function(times) {
     times = times || 1;
 
-    if (this.length < 1)  return this;
+    if (this.length < 1)
+      return this;
 
     var matches = this[this.length - 1].match(this.regex);
     var newToken, rest;
@@ -101,7 +122,7 @@
 
   Tokenizer.prototype.retract = function(times) {
     times = times || 1;
-    if (this.length < 2) return;
+    if (this.length < 2) return this;
 
     var delimiter = this.delimiters[this.delimiters.length - 1] || '';
 
@@ -119,8 +140,9 @@
   }
 
   Tokenizer.prototype.retractAll = function() {
-
-    while (this.length > 1) {
+    var plength = 0;
+    while (plength != this.length) {
+      plength = this.length;
       this.retract();
     }
 
@@ -167,6 +189,8 @@
       this.delimiters.splice(index, 0, delimiter);
     }
 
+    this.minExtractionLevel--;
+
     return this;
   }
 
@@ -175,18 +199,24 @@
 
     if (this.length > 1) this.delimiters.push(delimiter || '');
 
+    this.minExtractionLevel--;
+
     return this;
   }
 
   Tokenizer.prototype.unshift = function(str, delimiter) {
     Array.prototype.unshift.call(this, str);
     this.delimiters.unshift(delimiter || '');
+
+    this.minExtractionLevel--;
+
     return this;
   }
 
   Tokenizer.prototype.shift = function() {
     var elem = Array.prototype.shift.call(this);
     this.delimiters.shift();
+
     return elem;
   }
 
