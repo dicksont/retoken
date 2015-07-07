@@ -2,7 +2,14 @@
 [![npm version](https://badge.fury.io/js/retoken.svg)](http://badge.fury.io/js/retoken)
 [![Bower version](https://badge.fury.io/bo/retoken.svg)](http://badge.fury.io/bo/retoken)
 
-Retoken is an awesome string tokenizer for JavaScript.
+Retoken is an awesome string tokenizer for JavaScript. It's awesomeness cannot be contained by the following features alone:
+
+- **In-place token extraction & storage ** - Tokens are neatly kept in a single array.
+- **Token retraction ** - Token extraction can be undone via retract. State/tokens can be modified & back-tracked.
+- **Cross module platform ** - Works with browser script tags, AMD loaders, and Node.js modules
+- **Compact size ** - Single file < 500 lines unminified. No dependencies.
+
+
 
 ## Installation
 ### Node
