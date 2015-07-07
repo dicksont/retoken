@@ -95,7 +95,7 @@
             paths: {
               'chai': '/bower_components/chai/chai',
               'retoken' : '/tokenizer',
-              'test-extractall' : '/test/test_extractall',
+              'test-all' : '/test/test_all',
               'test-headtail' : '/test/test_headtail',
               'test-insert' : '/test/test_insert',
               'test-lastdelimiter' : '/test/test_lastdelimiter',
@@ -105,7 +105,7 @@
               'test-tokenizer' : '/test/test_tokenizer'
             }
           });
-          requirejs(['test-tokenizer', 'test-overrides', 'test-reverse',  'test-insert', 'test-lastdelimiter', 'test-toarray', 'test-headtail', 'test-extractall'], function() {
+          requirejs(['test-tokenizer', 'test-overrides', 'test-reverse',  'test-insert', 'test-lastdelimiter', 'test-toarray', 'test-headtail', 'test-all'], function() {
             mocha.checkLeaks();
             mocha.run();
           });
@@ -134,7 +134,7 @@
         '/test/test_lastdelimiter.js',
         '/test/test_toarray.js',
         '/test/test_headtail.js',
-        '/test/test_extractall.js'
+        '/test/test_all.js'
       ])
     }
 

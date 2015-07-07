@@ -118,6 +118,15 @@
     return (times > 1)? this.retract(times - 1) : this;
   }
 
+  Tokenizer.prototype.retractAll = function() {
+
+    while (this.length > 1) {
+      this.retract();
+    }
+
+    return this;
+  }
+
 
   Tokenizer.prototype.replaceToken = function(token, replacement) {
      var index = this.indexOf(token);

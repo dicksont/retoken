@@ -48,5 +48,12 @@
          assert(tk.length == 3 && tk[0] == 'a' && tk[1] == 'b' && tk[2] == 'c');
        })
      });
+
+     describe('.retractAll', function() {
+       it ('should extract all the tokens', function() {
+         var tk = tokenizer(' ').push('a b c').extractAll().retractAll();
+         assert(tk[0] == 'a b c');
+       })
+     });
    });
 })
