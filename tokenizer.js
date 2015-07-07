@@ -88,6 +88,16 @@
     return (times > 1)? this.extract(times - 1) : this;
   }
 
+  Tokenizer.prototype.extractAll = function() {
+    var plength = 0;
+    while (plength != this.length) {
+      plength = this.length;
+      this.extract();
+    }
+
+    return this;
+  }
+
 
   Tokenizer.prototype.retract = function(times) {
     times = times || 1;
