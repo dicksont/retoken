@@ -28,83 +28,174 @@
 
 (function() {
 
+  function getCore(regex) {
+    if (regex instanceof RegExp) {
+      return regex.source.replace('/^\^/', '').replace('/\$$/', '');
+    } else {
+      return regex.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    }
+  }
+
+  function HeadSplitter(reDelimiter) {
+    var regex = new RegExp('^(.*?)(' + getCore(reDelimiter) + ')(.*)$');
+
+    return function(str, opts) {
+      var matches = str.match(regex);
+
+      if (!matches)
+        return null;
+
+      var token = matches[1];
+      var delimiter = matches[2];
+      var rest = matches[matches.length - 1];
+
+      if (opts.incorporateDelimiter) {
+        if (token.length > 0) {
+          rest = delimiter + rest;
+        } else {
+          token = token + delimiter;
+        }
+        delimiter = '';
+      }
+
+      return {
+        delimiter: delimiter,
+        token: token,
+        rest: rest
+      }
+    }
+  }
+
+  function TailSplitter(reDelimiter, opts) {
+    var regex = new RegExp('^(.*)(' + getCore(reDelimiter) + ')(.*?)$');
+
+    return function(str) {
+      var matches = str.match(regex);
+
+      if (!matches)
+        return null;
+
+      var delimiter = matches[2];
+      var token = matches[matches.length - 1];
+      var rest = matches[1];
+
+      if (opts.incorporateDelimiter) {
+        if (token.length > 0) {
+          rest = rest + delimiter;
+        } else {
+          token = delimiter + token;
+        }
+
+        delimiter = '';
+      }
+
+      return {
+        delimiter: delimiter,
+        token: token,
+        rest: rest
+      }
+    }
+  }
+
+  function TailExtender(tokenizer) {
+
+    return function(token, delimiter, rest) {
+      var tail = tokenizer.length - 1;
+
+      tokenizer.delimiters[tail] = delimiter;
+      tokenizer[tail] = token;
+      tokenizer[tail + 1] = rest;
+    }
+  }
+
+  function HeadExtender(tokenizer) {
+
+    return function(token, delimiter, rest) {
+      tokenizer.delimiters.push(delimiter);
+      Array.prototype.splice.call(tokenizer, 1, 0, token);
+      tokenizer[0] = rest;
+    }
+
+  }
+
+  function HeadCombiner(tokenizer) {
+    return function() {
+
+      if (typeof(tokenizer.delimiters[0]) != 'string')
+        throw new Error('retoken: Tried to retract a delimiter that is not a string');
+
+      if (typeof(tokenizer[1]) != 'string')
+        throw new Error('retoken: Tried to retract a token that is not a string');
+
+      tokenizer[1] = tokenizer[0] + tokenizer.delimiters[0] + tokenizer[1];
+      tokenizer.shift();
+    }
+  }
+
+  function TailCombiner(tokenizer) {
+    return function() {
+
+      if (typeof(tokenizer[tokenizer.length - 2]) != 'string')
+        throw new Error('retoken: Tried to retract a token that is not a string');
+
+      if (typeof(tokenizer.delimiters[tokenizer.delimiters.length - 1]) != 'string')
+        throw new Error('retoken: Tried to retract a delimiter that is not a string');
+
+      tokenizer[tokenizer.length - 2] +=  tokenizer.delimiters[tokenizer.delimiters.length - 1] + tokenizer[tokenizer.length - 1];
+      tokenizer.pop();
+    }
+  }
+
   function Tokenizer(reDelimiter, opts) {
-    var instance = [ ];
+    var tk = [ ];
+    tk.__proto__ = Tokenizer.prototype;
 
-    instance.__proto__ = Tokenizer.prototype;
+    opts = opts || {};
+    tk.delimiters = [];
+    tk.extractionLevel = 0;
+    tk.reverse = opts.reverse || false;
 
-    instance.opts = opts || {};
-    instance.delimiters = [];
-    instance.extractionLevel = 0;
-    instance.minExtractionLevel = 0;
+    tk.split = tk.reverse? TailSplitter(reDelimiter) : HeadSplitter(reDelimiter);
+    tk.extend = tk.reverse? HeadExtender(tk) : TailExtender(tk);
+    tk.combine = tk.reverse? HeadCombiner(tk) : TailCombiner(tk);
 
-    instance.replaceDelimiterExpression(reDelimiter);
+    tk.delimiterOffset = tk.reverse? -1 : 0;
 
-    return instance;
+
+    return tk;
   }
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
-  Tokenizer.prototype.replaceDelimiterExpression = function(reDelimiter) {
-    var reCore;
+  Tokenizer.prototype.subtokenize = function(index, reDelimiter, opts) {
+    var newtk = Tokenizer(reDelimiter, opts).push(this[index]);
+    this[index] = newtk;
 
-    if (reDelimiter instanceof RegExp) {
-      reCore = reDelimiter.source.replace('/^\^/', '').replace('/\$$/', '');
-    } else {
-      reCore = reDelimiter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-    }
-
-    Object.defineProperty(this, 'regex', {
-      value: new RegExp('^(.*?)(' + reCore + ')(.*)$'),
-      enumerable: true,
-      configurable: true
-    });
+    return new tk;
   }
 
-  Tokenizer.prototype.subtokenize = function(reDelimiter, opts) {
-
-    for (var optName in opts) {
-      this.opts[optName] = opts[optName];
-    }
-
-    this.replaceDelimiterExpression(reDelimiter);
-    this.minExtractionLevel = this.extractionLevel;
-  }
-
-  Tokenizer.prototype.canRetract = function() {
-    return this.extractionLevel - 1 > this.minExtractionLevel;
-  }
+  Object.defineProperty(Tokenizer.prototype, 'origin', {
+    get: function() {
+      return (this.direction == 'ltr')? 0 : this.length - 1;
+    },
+    enumerable: true
+  });
 
   Tokenizer.prototype.extract = function(times) {
+    var self = this;
+
     times = times || 1;
 
     if (this.length < 1)
       return this;
 
-    var matches = this[this.length - 1].match(this.regex);
-    var newToken, rest;
+    var parts = this.split(this[this.origin], this.incorporateDelimiter || false);
+    if (!parts) return this;
 
-    if (matches) {
-      if (this.opts.incorporateDelimiter) {
-        if (matches[1].length > 0) {
-          newToken = matches[1];
-          rest = matches[2] + matches[matches.length - 1];
-        } else {
-          newToken = matches[1] + matches[2];
-          rest = matches[matches.length - 1];
-        }
-        this.delimiters.push('');
-      } else {
-        newToken = matches[1];
-        this.delimiters.push(matches[2]);
-        rest = matches[3];
-      }
-      this.lastDelimiterExtracted = matches[2];
-      this[this.length - 1] = newToken;
-      this[this.length] = rest;
-      this.extractionLevel++;
-    }
+    this.lastDelimiterExtracted = parts.delimiter;
+    this.extend(parts.token, parts.delimiter, parts.rest);
 
+    this.extractionLevel++;
 
     return (times > 1)? this.extract(times - 1) : this;
   }
@@ -119,6 +210,13 @@
     return this;
   }
 
+  Tokenizer.prototype.replaceAll = function(token, replacement) {
+    for (var i=0; i < this.length; i++) {
+      if (token == this[i])
+        this[i] = replacement;
+    }
+  }
+
 
   Tokenizer.prototype.retract = function(times) {
     times = times || 1;
@@ -126,14 +224,7 @@
 
     var delimiter = this.delimiters[this.delimiters.length - 1] || '';
 
-    if (typeof(this[this.length - 2]) != 'string' || typeof(this[this.length - 1]) != 'string')
-      throw new Error('retoken: Tried to retract a token that is not a string');
-
-    if (typeof(delimiter) != 'string')
-      throw new Error('retoken: Tried to retract a delimiter that is not a string');
-
-    this[this.length - 2] += delimiter + this[this.length - 1];
-    this.pop();
+    this.combine();
     this.extractionLevel--;
 
     return (times > 1)? this.retract(times - 1) : this;
@@ -149,47 +240,35 @@
     return this;
   }
 
-
-  Tokenizer.prototype.replaceToken = function(token, replacement) {
-     var index = this.indexOf(token);
-     if (!~index) return this;
-
-     this[index] = replacement;
-
-     return this;
-  }
-
   function TOKENIZER_OVERRIDE_NOT_IMPLEMENTED(fxname) {
     Tokenizer.prototype[fxname] = function() {
-      throw new Error('retoken: Function ' + fxname + ' not yet implemented in tokenizer');
+      throw new Error('retoken: Function ' + fxname + ' not implemented in tokenizer');
     }
   }
 
-  Tokenizer.prototype.reverse = function() {
-    Array.prototype.reverse.call(this);
-    this.delimiters.reverse();
-    return this;
-  }
-
-
+  TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('reverse');
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('splice');
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('sort');
 
-  Tokenizer.prototype.insertToken = function(index, token, delimiter) {
+  Tokenizer.prototype.deleteToken = function(position) {
+    Array.prototype.splice.call(this,position, 1);
+    this.delimiters.splice(position + this.delimiterOffset, 1);
+  }
+
+  Tokenizer.prototype.insertToken = function(position, token, delimiter) {
+
     if (typeof(token) != 'string')
-      throw new Error('retoken: Second argument [token] is not a string: ' + token);
+      throw new Error('retoken: Token is not a string: ' + token);
+
+    Array.prototype.splice.call(this, position, 0, token);
+
+    if (this.length < 1) return this;
 
     if (delimiter != null && typeof(delimiter) != 'string')
-      throw new Error('retoken: Third argument [delimiter] is not a string: ' + delimiter);
+      throw new Error('retoken: Delimiter is not a string: ' + delimiter);
 
-    Array.prototype.splice.call(this, index, 0, token);
-
-    if (this.length > 1) {
-      delimiter = delimiter || ''
-      this.delimiters.splice(index, 0, delimiter);
-    }
-
-    this.minExtractionLevel--;
+    delimiter = delimiter || ''
+    this.delimiters.splice(position + this.delimiterOffset, 0, delimiter);
 
     return this;
   }
@@ -199,16 +278,12 @@
 
     if (this.length > 1) this.delimiters.push(delimiter || '');
 
-    this.minExtractionLevel--;
-
     return this;
   }
 
   Tokenizer.prototype.unshift = function(str, delimiter) {
     Array.prototype.unshift.call(this, str);
     this.delimiters.unshift(delimiter || '');
-
-    this.minExtractionLevel--;
 
     return this;
   }

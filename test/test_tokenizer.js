@@ -44,11 +44,13 @@
 
   var delimiters = [
     /\s+/,
-    '.'
+    '.',
+    /\d/
   ];
   var strings = [
     'The quick brown fox jumped over the lazy dog',
-    '172.168.120.2'
+    '172.168.120.2',
+    'a1b2c3d4'
   ];
 
   function test(delimiter, str) {

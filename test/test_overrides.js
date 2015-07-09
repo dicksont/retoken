@@ -44,6 +44,14 @@
 })(function(assert, tokenizer) {
 
   describe('--', function() {
+    describe('.reverse', function() {
+      it('should throw an error when called', function() {
+        assert.throws(function() {
+          tokenizer(' ').push('Hello world!').splice(0,1);
+        });
+      })
+    })
+
     describe('.splice', function() {
       it('should throw an error when called', function() {
         assert.throws(function() {
