@@ -36,10 +36,11 @@
     }
   }
 
-  function HeadSplitter(reDelimiter) {
+  function HeadSplitter(reDelimiter, separateDelimiter) {
     var regex = new RegExp('^(.*?)(' + getCore(reDelimiter) + ')(.*)$');
+    separateDelimiter = (separateDelimiter != null)? separateDelimiter : true;
 
-    return function(str, opts) {
+    return function(str, incorporateDelimiter) {
       var matches = str.match(regex);
 
       if (!matches)
@@ -49,7 +50,7 @@
       var delimiter = matches[2];
       var rest = matches[matches.length - 1];
 
-      if (opts.incorporateDelimiter) {
+      if (incorporateDelimiter) {
         if (token.length > 0) {
           rest = delimiter + rest;
         } else {
@@ -66,10 +67,11 @@
     }
   }
 
-  function TailSplitter(reDelimiter, opts) {
+  function TailSplitter(reDelimiter) {
     var regex = new RegExp('^(.*)(' + getCore(reDelimiter) + ')(.*?)$');
+    separateDelimiter = (separateDelimiter != null)? separateDelimiter : true;
 
-    return function(str) {
+    return function(str, incorporateDelimiter) {
       var matches = str.match(regex);
 
       if (!matches)
@@ -79,7 +81,7 @@
       var token = matches[matches.length - 1];
       var rest = matches[1];
 
-      if (opts.incorporateDelimiter) {
+      if (incorporateDelimiter) {
         if (token.length > 0) {
           rest = rest + delimiter;
         } else {
@@ -146,11 +148,13 @@
     }
   }
 
+
   function Tokenizer(reDelimiter, opts) {
     var tk = [ ];
     tk.__proto__ = Tokenizer.prototype;
 
     opts = opts || {};
+    tk.separateDelimiter = (opts.separateDelimiter != null)? !!opts.separateDelimiter : true;
     tk.delimiters = [];
     tk.extractionLevel = 0;
     tk.reverse = opts.reverse || false;
@@ -167,13 +171,6 @@
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
-  Tokenizer.prototype.subtokenize = function(index, reDelimiter, opts) {
-    var newtk = Tokenizer(reDelimiter, opts).push(this[index]);
-    this[index] = newtk;
-
-    return new tk;
-  }
-
   Object.defineProperty(Tokenizer.prototype, 'origin', {
     get: function() {
       return (this.direction == 'ltr')? 0 : this.length - 1;
@@ -189,7 +186,7 @@
     if (this.length < 1)
       return this;
 
-    var parts = this.split(this[this.origin], this.incorporateDelimiter || false);
+    var parts = this.split(this[this.origin], !this.separateDelimiter);
     if (!parts) return this;
 
     this.lastDelimiterExtracted = parts.delimiter;
@@ -269,6 +266,26 @@
 
     delimiter = delimiter || ''
     this.delimiters.splice(position + this.delimiterOffset, 0, delimiter);
+
+    return this;
+  }
+
+  Tokenizer.prototype.subtokenize = function(tkParent, position) {
+    if (!(tkParent instanceof Tokenizer))
+      throw new Error('retoken: tkParent is not a Tokenizer: ' + tkParent);
+
+    try {
+
+      if (this.reverse) {
+        this.shift(tkParent[position]);
+      } else {
+        this.push(tkParent[position]);
+      }
+
+      tkParent[position] = this;
+    } catch (err) {
+      throw new Error('retoken: Failed to access position ' + position + ' at parent tokenizer ' + tkParent);
+    }
 
     return this;
   }
