@@ -369,7 +369,7 @@
   }
 
   /*
-   * FUNC push
+   * FUNC unshift
    * Adds a token and its delimiter to the beginning of the tokenizer.
    */
 
