@@ -216,9 +216,38 @@
     enumerable: true
   });
 
+  /* PROP .tap
+   * Get/set the token closest to the origin that is not the origin.
+   */
+
+  Object.defineProperty(Tokenizer.prototype, 'tap', {
+    get: function() {
+
+      if (this.length < 2)
+        return null;
+
+
+      return this.reverse? this[1] : this[this.length - 2];
+    },
+    set: function(token) {
+
+      if (this.length < 2)
+        return;
+
+      if (this.reverse) {
+        this[1] = token
+      } else {
+        this[this.length - 2] = token;
+      }
+
+    },
+    enumerable: true
+  });
+
+
   /*
    * PROP .head
-   * Returns the element at the beginning of the tokenizer.
+   * Get/set the element at the beginning of the tokenizer.
    */
   Object.defineProperty(Tokenizer.prototype, 'head', {
     get: function() { return this[0]; },
@@ -228,7 +257,7 @@
 
   /*
    * PROP .tail
-   * Returns the element at the end of the tokenizer.
+   * Get/set the element at the end of the tokenizer.
    */
   Object.defineProperty(Tokenizer.prototype, 'tail', {
     get: function() { return this[this.length - 1]; },

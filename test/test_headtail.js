@@ -75,5 +75,23 @@
         assert.equal(tk.tail, 'newTail');
       })
     });
+
+    describe('.tap', function() {
+      var tk;
+      beforeEach(function() {
+        tk = tokenizer(' ').push('head body tail').extract(2);
+      })
+
+      it('should return token closest to the origin', function() {
+        assert.equal(tk.tap, 'body');
+      })
+
+      it('should return new token after assignment', function() {
+        assert.equal(tk.tap, 'body');
+        tk.tap = 'newBody';
+        assert.equal(tk.tap, 'newBody');
+      })
+    });
+
   })
 });
