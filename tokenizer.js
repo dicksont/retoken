@@ -168,6 +168,16 @@
     }
   }
 
+  /* FUNC Tokenizer
+   * PARAM reDelimiter - Regular expression that will be used for the tokenization
+   * PARAM opts - Object used to control the tokenization
+   *    .separateDelimiter  - Set to false if the delimiter should be included in the token. (true)
+   *    .reverse - By default, the string is tokenized on the left side. Set to true if
+   *               otherwise. (false)
+   *
+   * Constructs the tokenizer.
+   *
+   */
 
   function Tokenizer(reDelimiter, opts) {
     var tk = [ ];
@@ -178,6 +188,11 @@
     tk.delimiters = [];
     tk.extractionLevel = 0;
     tk.reverse = opts.reverse || false;
+
+    /*
+     * These point to different functions handling extraction and retraction, depending
+     * on orientation.
+     */
 
     tk.split = tk.reverse? TailSplitter(reDelimiter) : HeadSplitter(reDelimiter);
     tk.extend = tk.reverse? HeadExtender(tk) : TailExtender(tk);
@@ -196,7 +211,7 @@
    */
   Object.defineProperty(Tokenizer.prototype, 'origin', {
     get: function() {
-      return (this.direction == 'ltr')? 0 : this.length - 1;
+      return this.reverse? 0 : this.length - 1;
     },
     enumerable: true
   });
@@ -335,6 +350,11 @@
     return this;
   }
 
+  /*
+   * FUNC subtokenize
+   * When fully implemented, this will handle nested tokenizations.
+   * 
+   */
   Tokenizer.prototype.subtokenize = function(tkParent, position) {
     if (!(tkParent instanceof Tokenizer))
       throw new Error('retoken: tkParent is not a Tokenizer: ' + tkParent);
