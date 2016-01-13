@@ -28,6 +28,9 @@
 
 (function() {
 
+  /* getCore
+   * Returns as a string the core of the regex powering this tokenizer.
+   */
   function getCore(regex) {
     if (regex instanceof RegExp) {
       return regex.source.replace('/^\^/', '').replace('/\$$/', '');
@@ -35,6 +38,13 @@
       return regex.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     }
   }
+
+  /* HeadSplitter & TailSplitter
+   * These higher-order functions return functions that do NOT actually split
+   * the string. Instead, these resulting functions determine what is actually
+   * split from the string.
+   */
+
 
   function HeadSplitter(reDelimiter, separateDelimiter) {
     var regex = new RegExp('^(.*?)(' + getCore(reDelimiter) + ')(.*)$');
@@ -99,6 +109,12 @@
     }
   }
 
+
+
+  /* HeadExtender & TailExtender
+   * These are higher-order functions that manage the extraction of tokens.
+   */
+
   function TailExtender(tokenizer) {
 
     return function(token, delimiter, rest) {
@@ -119,6 +135,10 @@
     }
 
   }
+
+  /* HeadCombiner & TailCombiner
+   * These are higher-order functions that manage the retraction of tokens.
+   */
 
   function HeadCombiner(tokenizer) {
     return function() {
@@ -196,6 +216,19 @@
 
     return (times > 1)? this.extract(times - 1) : this;
   }
+
+  /* finished
+   * Returns:
+   *    - true if no more tokens can be extracted.
+   *    - false if otherwise
+   */
+
+  Tokenizer.prototype.finished = function() {
+
+    /* Tokenization is finished when we cannot split any further */
+    return !this.split(this[this.origin], !this.separateDelimiter);
+  }
+
 
   Tokenizer.prototype.extractAll = function() {
     var plength = 0;

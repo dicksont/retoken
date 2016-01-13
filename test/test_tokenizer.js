@@ -97,6 +97,22 @@
         })
       })
 
+      describe('.finished', function() {
+
+        it('should return false when more tokens can be extracted', function() {
+          var tk = tokenizer(delimiter).push(str);
+
+          assert.ok(!tk.finished());
+        })
+
+        it('should return true when all tokens have been extracted', function() {
+          var tk = tokenizer(delimiter).push(str).extractAll();
+
+          assert.ok(tk.finished());
+        })
+      });
+
+
       describe('.extractionLevel', function() {
         it('should equal zero at construction', function() {
           var tk = tokenizer(delimiter);
