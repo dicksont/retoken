@@ -206,8 +206,8 @@
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
-  /* PROP origin
-   * Returns the string used to generate the tokens.
+  /* PROP .origin
+   * Returns the position of the string used to generate the tokens.
    */
   Object.defineProperty(Tokenizer.prototype, 'origin', {
     get: function() {
@@ -215,6 +215,27 @@
     },
     enumerable: true
   });
+
+  /*
+   * PROP .head
+   * Returns the element at the beginning of the tokenizer.
+   */
+  Object.defineProperty(Tokenizer.prototype, 'head', {
+    get: function() { return this[0]; },
+    set: function(token) { this[0] = token; },
+    enumerable: true
+  })
+
+  /*
+   * PROP .tail
+   * Returns the element at the end of the tokenizer.
+   */
+  Object.defineProperty(Tokenizer.prototype, 'tail', {
+    get: function() { return this[this.length - 1]; },
+    set: function(token) { this[this.length - 1] = token; },
+    enumerable: true
+  })
+
 
   /* FUNC extract
    * Extracts a token from the origin.
@@ -353,7 +374,7 @@
   /*
    * FUNC subtokenize
    * When fully implemented, this will handle nested tokenizations.
-   * 
+   *
    */
   Tokenizer.prototype.subtokenize = function(tkParent, position) {
     if (!(tkParent instanceof Tokenizer))
@@ -442,27 +463,7 @@
 
 
 
-  /*
-   * PROP head
-   * Returns the element at the beginning of the tokenizer.
-   *
-   */
-  Object.defineProperty(Tokenizer.prototype, 'head', {
-    get: function() { return this[0]; },
-    set: function(token) { this[0] = token; },
-    enumerable: true
-  })
 
-  /*
-   * PROP tail
-   * Returns the element at the end of the tokenizer.
-   *
-   */
-  Object.defineProperty(Tokenizer.prototype, 'tail', {
-    get: function() { return this[this.length - 1]; },
-    set: function(token) { this[this.length - 1] = token; },
-    enumerable: true
-  })
 
 
   if (typeof module !== 'undefined' && module && module.exports) { // Node.js & CommonJS
