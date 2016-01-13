@@ -28,7 +28,7 @@
 
 (function() {
 
-  /* getCore
+  /* FUNC getCore
    * Returns as a string the core of the regex powering this tokenizer.
    */
   function getCore(regex) {
@@ -39,7 +39,7 @@
     }
   }
 
-  /* HeadSplitter & TailSplitter
+  /* FUNC HeadSplitter & TailSplitter
    * These higher-order functions return functions that do NOT actually split
    * the string. Instead, these resulting functions determine what is actually
    * split from the string.
@@ -111,7 +111,7 @@
 
 
 
-  /* HeadExtender & TailExtender
+  /* FUNC HeadExtender & TailExtender
    * These are higher-order functions that manage the extraction of tokens.
    */
 
@@ -136,7 +136,7 @@
 
   }
 
-  /* HeadCombiner & TailCombiner
+  /* FUNC HeadCombiner & TailCombiner
    * These are higher-order functions that manage the retraction of tokens.
    */
 
@@ -191,6 +191,9 @@
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
+  /* PROP origin
+   * Returns the string used to generate the tokens.
+   */
   Object.defineProperty(Tokenizer.prototype, 'origin', {
     get: function() {
       return (this.direction == 'ltr')? 0 : this.length - 1;
@@ -198,6 +201,9 @@
     enumerable: true
   });
 
+  /* FUNC extract
+   * Extracts a token from the origin.
+   */
   Tokenizer.prototype.extract = function(times) {
     var self = this;
 
@@ -217,7 +223,7 @@
     return (times > 1)? this.extract(times - 1) : this;
   }
 
-  /* finished
+  /* FUNC finished
    * Returns:
    *    - true if no more tokens can be extracted.
    *    - false if otherwise
@@ -229,6 +235,9 @@
     return !this.split(this[this.origin], !this.separateDelimiter);
   }
 
+  /* FUNC extractAll
+   * Extracts all tokens from the origin.
+   */
 
   Tokenizer.prototype.extractAll = function() {
     var plength = 0;
@@ -240,6 +249,11 @@
     return this;
   }
 
+  /* FUNC replaceAll
+   * Replaces all matching tokens with the replacement.
+   *
+   */
+
   Tokenizer.prototype.replaceAll = function(token, replacement) {
     for (var i=0; i < this.length; i++) {
       if (token == this[i])
@@ -247,6 +261,10 @@
     }
   }
 
+  /* FUNC retract
+   * Absorbs neighboring token back into the origin. Can be used to undo a
+   * token extraction
+   */
 
   Tokenizer.prototype.retract = function(times) {
     times = times || 1;
@@ -259,6 +277,12 @@
 
     return (times > 1)? this.retract(times - 1) : this;
   }
+
+  /* FUNC retractAll
+   * Absorbs all tokens back into the origin. Can be used to undo all token
+   * extractions
+   *
+   */
 
   Tokenizer.prototype.retractAll = function() {
     var plength = 0;
@@ -276,6 +300,10 @@
     }
   }
 
+  /* These array operations can be problematic, so we will block them until they
+   * become necessary and we have figured how to handle them.
+   */
+
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('reverse');
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('splice');
   TOKENIZER_OVERRIDE_NOT_IMPLEMENTED('sort');
@@ -285,6 +313,10 @@
     this.delimiters.splice(position + this.delimiterOffset, 1);
   }
 
+  /*
+   * FUNC insertToken
+   * Inserts a token and its delimiter at a specific position in the tokenizer.
+   */
   Tokenizer.prototype.insertToken = function(position, token, delimiter) {
 
     if (typeof(token) != 'string')
@@ -323,6 +355,11 @@
     return this;
   }
 
+  /*
+   * FUNC push
+   * Adds a token and its delimiter to the end of the tokenizer.
+   */
+
   Tokenizer.prototype.push = function(str, delimiter) {
     Array.prototype.push.call(this, str);
 
@@ -331,12 +368,24 @@
     return this;
   }
 
+  /*
+   * FUNC push
+   * Adds a token and its delimiter to the beginning of the tokenizer.
+   */
+
   Tokenizer.prototype.unshift = function(str, delimiter) {
     Array.prototype.unshift.call(this, str);
     this.delimiters.unshift(delimiter || '');
 
     return this;
   }
+
+
+  /*
+   * FUNC shift
+   * Removes a token from the beginning of the tokenizer. The corresponding
+   * delimiter is removed as well.
+   */
 
   Tokenizer.prototype.shift = function() {
     var elem = Array.prototype.shift.call(this);
@@ -345,12 +394,22 @@
     return elem;
   }
 
+  /*
+   * FUNC pop
+   * Removes a token from the end of the tokenizer. The corresponding
+   * delimiter is removed as well.
+   */
+
   Tokenizer.prototype.pop = function() {
     var elem = Array.prototype.pop.call(this);
     this.delimiters.pop();
     return elem;
   }
 
+  /*
+   * FUNC toArray
+   * Returns an array whose elements match that of the tokenizer.
+   */
   Tokenizer.prototype.toArray = function() {
     var arr = new Array(this.length);
 
@@ -361,12 +420,24 @@
     return arr;
   }
 
+
+
+  /*
+   * PROP head
+   * Returns the element at the beginning of the tokenizer.
+   *
+   */
   Object.defineProperty(Tokenizer.prototype, 'head', {
     get: function() { return this[0]; },
     set: function(token) { this[0] = token; },
     enumerable: true
   })
 
+  /*
+   * PROP tail
+   * Returns the element at the end of the tokenizer.
+   *
+   */
   Object.defineProperty(Tokenizer.prototype, 'tail', {
     get: function() { return this[this.length - 1]; },
     set: function(token) { this[this.length - 1] = token; },
