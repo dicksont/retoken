@@ -137,8 +137,7 @@ console.log(tokenizer.tail)
 
 
 ### .origin
-Use this property to get the position of untokenized string.
-
+Use this property to get/set the untokenized string.
 
 ```javascript
 // Nicely inspect the tokenizer
@@ -148,6 +147,21 @@ console.log(tokenizer.toArray())
 // Output the position of the untokenized string
 console.log(tokenizer.origin)
 // quick brown fox jumped over the lazy dog
+
+```
+
+### .originIndex
+Use this property to get the position of untokenized string.
+
+
+```javascript
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray())
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
+
+// Output the position of the untokenized string
+console.log(tokenizer.originIndex)
+// 1
 
 ```
 
@@ -204,11 +218,6 @@ console.log(tokenizer.toArray()) // [ 'The', 'quick brown fox jumped over the la
 var retoken = require('retoken');
 
 ```
-
-### Constructor (delimiter)
-Construction occurs
-
-
 
 
 
