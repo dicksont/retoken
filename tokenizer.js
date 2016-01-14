@@ -243,6 +243,22 @@
     enumerable: true
   });
 
+  /* PROP .tapIndex
+   * Returns the position of the token closest to the origin that is not the origin.
+   * Returns null if suitable token does not exist.
+   */
+
+  Object.defineProperty(Tokenizer.prototype, 'tapIndex', {
+    get: function() {
+      if (this.length == 0)
+        return null;
+
+      return this.reverse? 1 : this.length - 2;
+    },
+    enumerable: true
+  });
+
+
   /* PROP .tap
    * Get/set the token closest to the origin that is not the origin.
    */
@@ -250,22 +266,17 @@
   Object.defineProperty(Tokenizer.prototype, 'tap', {
     get: function() {
 
-      if (this.length < 2)
+      if (this.tapIndex == null)
         return null;
 
-
-      return this.reverse? this[1] : this[this.length - 2];
+      return this[this.tapIndex];
     },
     set: function(token) {
 
-      if (this.length < 2)
-        throw new Error('ERROR! Cannot set tap for tokenizer whose length is less than 2.');
+      if (this.tapIndex == null)
+        throw new Error('ERROR! Unable to find tap for tokenizer.');
 
-      if (this.reverse) {
-        this[1] = token
-      } else {
-        this[this.length - 2] = token;
-      }
+      this[this.tapIndex] = token;
 
     },
     enumerable: true
