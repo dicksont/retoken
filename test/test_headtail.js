@@ -76,6 +76,18 @@
       })
     });
 
+    describe('.tapIndex', function() {
+      var tk;
+      beforeEach(function() {
+        tk = tokenizer(' ').push('head body tail').extract(2);
+      })
+
+      it('should return position closest to the origin', function() {
+        assert.equal(tk.tapIndex, 1);
+      })
+
+    });
+
     describe('.tap', function() {
       var tk;
       beforeEach(function() {
@@ -93,6 +105,17 @@
       })
     });
 
+    describe('.originIndex', function() {
+      var tk;
+      beforeEach(function() {
+        tk = tokenizer(' ').push('head body tail').extract(2);
+      })
+
+      it('should return position closest to the origin', function() {
+        assert.equal(tk.originIndex, 2);
+      })
+
+    });
 
     describe('.origin', function() {
       var tk;
