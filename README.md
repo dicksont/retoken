@@ -4,15 +4,30 @@
 
 Retoken is a string tokenization library for JavaScript. It provides a Tokenizer class that is based on your standard JavaScript array. This allows us to provide features like:
 
-- **[In-place token extraction & storage](#inplace)**
-- **Token retraction** - Token extraction can be undone via retract. State/tokens can be modified & back-tracked.
-- **Cross module platform** - Works with browser script tags, AMD loaders, and Node.js modules
-- **Compact size** - Single file < 500 lines unminified. Single dependency
+- **[In-place extraction & storage](#inplace)**
+- **[Retraction](#retraction)**
+
+Retoken is also **[cross-platform](#crossplatform)** compatible and has a **[light footprint](#footprint)**.
 
 
+## Features
 
-## <a name="inplace">In-place Token Extraction & Storage</a>
+### <a name="inplace">In-place Extraction & Storage</a>
 Tokens are neatly kept in a single array.
+
+### <a name="retraction">Retraction</a>
+Extraction can be undone. State/tokens can be modified & back-tracked.
+
+### <a name="crossplatform">Cross-platform</a>
+Should work under various environments including the following:
+* Browser script tags
+* AMD loaders
+* Node.js modules
+
+###  <a name="footprint">Light footprint</a>
+1. Single file
+2. < 500 lines unminified
+3. Single dependency on **[rfline](https://github.com/dicksont/rfline)**
 
 ## Installation
 ### Node
