@@ -206,12 +206,33 @@
 
   Tokenizer.prototype.__proto__ = Array.prototype
 
-  /* PROP .origin
-   * Returns the position of the string used to generate the tokens.
+  /* PROP .originIndex
+   * Returns the position of the string if any used to generate the tokens.
+   * Returns null if string does not exist.
    */
+
+  Object.defineProperty(Tokenizer.prototype, 'originIndex', {
+    get: function() {
+      if (this.length == 0)
+        return null;
+
+      return this.reverse? 0 : this.length - 1;
+    },
+    enumerable: true
+  });
+
+
+  /* PROP .origin
+   * Returns the string if any used to generate the tokens.
+   * Returns null if string does not exist.
+   */
+
   Object.defineProperty(Tokenizer.prototype, 'origin', {
     get: function() {
-      return this.reverse? 0 : this.length - 1;
+      if (this.originIndex == null)
+        return null;
+
+      return this[this.originIndex];
     },
     enumerable: true
   });
@@ -277,7 +298,7 @@
     if (this.length < 1)
       return this;
 
-    var parts = this.split(this[this.origin], !this.separateDelimiter);
+    var parts = this.split(this.origin, !this.separateDelimiter);
     if (!parts) return this;
 
     this.lastDelimiterExtracted = parts.delimiter;
@@ -297,7 +318,7 @@
   Tokenizer.prototype.finished = function() {
 
     /* Tokenization is finished when we cannot split any further */
-    return !this.split(this[this.origin], !this.separateDelimiter);
+    return !this.split(this.origin, !this.separateDelimiter);
   }
 
   /* FUNC extractAll
@@ -480,7 +501,7 @@
    * FUNC toArray
    * Returns an array whose elements match that of the tokenizer.
    */
-   
+
   Tokenizer.prototype.toArray = function() {
     var arr = new Array(this.length);
 
