@@ -41,13 +41,15 @@ var tokenizer = retoken(' ');
 tokenizer.push('The quick brown fox jumped over the lazy dog')
 
 // Nicely inspect the tokenizer
-console.log(tokenizer.toArray()) // [ 'The quick brown fox jumped over the lazy dog' ]
+console.log(tokenizer.toArray())
+// [ 'The quick brown fox jumped over the lazy dog' ]
 
 // Extract our first token
 tokenizer.extract()
 
 // Nicely inspect the tokenizer
-console.log(tokenizer.toArray()) // [ 'The', 'quick brown fox jumped over the lazy dog' ]
+console.log(tokenizer.toArray())
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
 
 ```
 
@@ -61,13 +63,15 @@ the original sentence.
 ```javascript
 
 // Nicely inspect the tokenizer
-console.log(tokenizer.toArray()) // [ 'The', 'quick brown fox jumped over the lazy dog' ]
+console.log(tokenizer.toArray())
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
 
 // Retract a token
 tokenizer.retract()
 
 // Nicely inspect the tokenizer
-console.log(tokenizer.toArray()) // [ 'The quick brown fox jumped over the lazy dog' ]
+console.log(tokenizer.toArray())
+// [ 'The quick brown fox jumped over the lazy dog' ]
 
 ```
 
@@ -87,6 +91,82 @@ Retoken is relatively light. It is:
 1. Single file,
 2. < 500 lines unminified,
 3. Free from runtime dependencies
+
+
+
+## Access
+Retoken exposes a few properties to facilitate access to tokens within the tokenizer:
+
+### .head
+Use this property to get/set the element at index 0 within the tokenizer.
+
+```javascript
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray())    
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
+
+// Output the element at index 0
+console.log(tokenizer[0])           
+// The
+
+// Output the element at index 0 with the .head property
+console.log(tokenizer.head)         
+// The
+
+
+```
+
+### .tail
+Use this property to get/set the element at the last index within the tokenizer.
+
+
+```javascript
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray())
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
+
+// Output the element at the last index
+console.log(tokenizer[tokenizer.length - 1])
+// quick brown fox jumped over the lazy dog
+
+// Output the element at the last index w/ the .tail property
+console.log(tokenizer.tail)
+// quick brown fox jumped over the lazy dog
+
+```
+
+
+### .origin
+Use this property to get the position of untokenized string.
+
+
+```javascript
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray())
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
+
+// Output the position of the untokenized string
+console.log(tokenizer.origin)
+// quick brown fox jumped over the lazy dog
+
+```
+
+
+### .tap
+Use this property to get/set token closest to the origin.
+
+
+```javascript
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray())
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
+
+// Output the token closest to the origin
+console.log(tokenizer.tap)
+// The
+
+```
+
 
 ## Usage
 The following examples illustrates how retoken can be used:
@@ -117,6 +197,20 @@ console.log(tokenizer.toArray()) // [ 'The', 'quick brown fox jumped over the la
 
 
 ## API
+
+### Import Library on Node
+
+```javascript
+var retoken = require('retoken');
+
+```
+
+### Constructor (delimiter)
+Construction occurs
+
+
+
+
 
 ## License
 The MIT License (MIT)
