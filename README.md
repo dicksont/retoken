@@ -13,21 +13,24 @@ Retoken is also **[cross-platform](#crossplatform)** compatible and has a **[lig
 ## Features
 
 ### <a name="inplace">In-place Extraction & Storage</a>
-Tokens are neatly kept in a single array.
+Because the retoken Tokenizer class is subclassed directly from an array, tokenization occurs within the context of an array. Extracted tokens are essentially elements of the array, and can be manipulated as such.
 
 ### <a name="retraction">Retraction</a>
-Extraction can be undone. State/tokens can be modified & back-tracked.
+Tokens can be re-incorporated back into the untokenized string via a process
+we call retraction. Retraction can be used to undo extraction.
 
 ### <a name="crossplatform">Cross-platform</a>
-Should work under various environments including the following:
+This library should work under various environments including the following:
 * Browser script tags
 * AMD loaders
 * Node.js modules
 
 ###  <a name="footprint">Light footprint</a>
-1. Single file
-2. < 500 lines unminified
-3. No runtime dependency
+Retoken is relatively light. It is:
+
+1. Single file,
+2. < 500 lines unminified,
+3. Free from runtime dependencies
 
 ## Installation
 ### Node
