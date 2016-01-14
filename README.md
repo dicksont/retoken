@@ -27,7 +27,7 @@ Should work under various environments including the following:
 ###  <a name="footprint">Light footprint</a>
 1. Single file
 2. < 500 lines unminified
-3. Single dependency on **[rfline](https://github.com/dicksont/rfline)**
+3. No runtime dependency
 
 ## Installation
 ### Node
