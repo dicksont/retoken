@@ -234,6 +234,12 @@
 
       return this[this.originIndex];
     },
+    set: function(token) {
+        if (this.originIndex == null)
+          throw new Error('ERROR! Unable to find origin of tokenizer and to set token.');
+
+        this[this.originIndex] = token;
+    },
     enumerable: true
   });
 
@@ -253,7 +259,7 @@
     set: function(token) {
 
       if (this.length < 2)
-        return;
+        throw new Error('ERROR! Cannot set tap for tokenizer whose length is less than 2.');
 
       if (this.reverse) {
         this[1] = token

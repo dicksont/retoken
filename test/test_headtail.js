@@ -93,5 +93,25 @@
       })
     });
 
+
+    describe('.origin', function() {
+      var tk;
+      beforeEach(function() {
+        tk = tokenizer(' ').push('head body tail').extract(2);
+      })
+
+      it('should return the untokenized string', function() {
+        assert.equal(tk.origin, 'tail');
+      })
+
+      it('should return new token after assignment', function() {
+        assert.equal(tk[2], 'tail');
+        tk.origin = 'newTail';
+        assert.equal(tk[2], 'newTail');
+      })
+    });
+
+
+
   })
 });
