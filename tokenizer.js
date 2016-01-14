@@ -41,8 +41,8 @@
 
   /* FUNC HeadSplitter & TailSplitter
    * These higher-order functions return functions that do NOT actually split
-   * the string. Instead, these resulting functions determine what is actually
-   * split from the string.
+   * the string. Instead, these resulting functions return what is split from
+   * the string.
    */
 
 
@@ -171,9 +171,9 @@
   /* FUNC Tokenizer
    * PARAM reDelimiter - Regular expression that will be used for the tokenization
    * PARAM opts - Object used to control the tokenization
-   *    .separateDelimiter  - Set to false if the delimiter should be included in the token. (true)
+   *    .separateDelimiter  - Set to false if the delimiter should be included in the token. (default: true)
    *    .reverse - By default, the string is tokenized on the left side. Set to true if
-   *               otherwise. (false)
+   *               otherwise. (default: false)
    *
    * Constructs the tokenizer.
    *
@@ -480,6 +480,7 @@
    * FUNC toArray
    * Returns an array whose elements match that of the tokenizer.
    */
+   
   Tokenizer.prototype.toArray = function() {
     var arr = new Array(this.length);
 
