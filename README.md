@@ -40,10 +40,31 @@ npm install retoken
 
 
 ## Usage
+The following examples illustrates how retoken can be used:
 
 
-## API
+### Word Splitting
+This example shows how to split words from a sentence:
 
+```javascript
+var retoken = require('retoken');
+
+// Construct a tokenizer that splits on the space character
+var tokenizer = retoken(' ');
+
+// Insert our test string into the tokenizer
+tokenizer.push('The quick brown fox jumped over the lazy dog')
+
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray()) // [ 'The quick brown fox jumped over the lazy dog' ]
+
+// Extract our first token
+tokenizer.extract()
+
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray()) // [ 'The', 'quick brown fox jumped over the lazy dog' ]
+
+```
 
 
 ## License
