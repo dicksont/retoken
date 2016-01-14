@@ -167,7 +167,7 @@ console.log(tokenizer.originIndex)
 
 
 ### .tap
-Use this property to get/set token closest to the origin.
+Use this property to get/set the token closest to the origin.
 
 
 ```javascript
@@ -178,6 +178,21 @@ console.log(tokenizer.toArray())
 // Output the token closest to the origin
 console.log(tokenizer.tap)
 // The
+
+```
+
+### .tapIndex
+Use this property to get position of the token closest to the origin.
+
+
+```javascript
+// Nicely inspect the tokenizer
+console.log(tokenizer.toArray())
+// [ 'The', 'quick brown fox jumped over the lazy dog' ]
+
+// Output the token closest to the origin
+console.log(tokenizer.tapIndex)
+// 0
 
 ```
 
@@ -218,8 +233,6 @@ console.log(tokenizer.toArray()) // [ 'The', 'quick brown fox jumped over the la
 var retoken = require('retoken');
 
 ```
-
-
 
 ## License
 The MIT License (MIT)
